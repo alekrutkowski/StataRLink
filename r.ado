@@ -16,6 +16,9 @@ prog r, rclass
 		waitforfile "`server_dir'script `dt'.R.done"
 		qui rm "`server_dir'script `dt'.R.done"
 		dicen "R output start"
+		type "`server_dir'script `dt'.R.output"
+		dicen "R output end"
+		di
 		tempname fh
 		local linenum = 0
 		file open `fh' using "`server_dir'script `dt'.R.output", read text
@@ -23,13 +26,10 @@ prog r, rclass
 		while r(eof)==0 {
 			local linenum = `linenum' + 1
 			ret loc r`=`linenum'-1' `"`macval(line)'"'
-			di as txt `"`macval(line)'"'
 			file read `fh' line
 		}
 		file close `fh'
 		ret sca rn = `linenum' - 1
-		dicen "R output end"
-		di
 		qui rm "`server_dir'script `dt'.R.output"
 	}
 end
