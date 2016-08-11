@@ -1,6 +1,12 @@
 prog startr
+	syntax [, force]
 	if mi(`"$rscript_path"')  {
 		noi di as err "You must set the global macro {bf:rscript_path}"
+		err 691
+	}
+	if "$rserver"=="on" & mi("`force'") {
+		di as err `"R "server" seems to be open already."' _n /*
+			*/ "Use option {bf:force} if you really want to start R."
 		err 691
 	}
 	loc stmp = strofreal(round(runiform()*1e8),"%9.0f")
