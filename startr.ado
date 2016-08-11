@@ -8,11 +8,11 @@ prog startr
 	loc server_dir = subinstr("`c(tmpdir)'","\","/",.)
 	qui findfile StataRLink_server.R
 	loc server_file "`r(fn)'"
-	tempfile server_file_copy
-	qui copy "`server_file'" "`server_file_copy'.R", text public replace
-	qui filewrap using "`server_file_copy'.R", /*
+	loc server_file_copy "`server_dir'server `dt'.R"
+	qui copy "`server_file'" "`server_file_copy'", text public replace
+	qui filewrap using "`server_file_copy'", /*
 		*/ pre("..server_dir.. <- '`server_dir''; ..dt.. <- '`dt''")
-	winexec $rscript_path --verbose "`server_file_copy'.R"
+	winexec $rscript_path --verbose "`server_file_copy'"
 	waitforfile "`server_dir'`dt'.server_opened"
 	rm "`server_dir'`dt'.server_opened"
 	glo rserver "on"
