@@ -35,7 +35,8 @@ foreach f in `F1' `F2' {
 #### Manually
 
 Download <https://github.com/alekrutkowski/StataRLink/archive/master.zip>
-and open (unzip) it. Then, copy the unzipped contents into your "personal"
+and open (unzip) it. Then, copy the unzipped contents
+(the contents of the `StataRLink-master` subdirectory) into your "personal"
 Stata directory. You can find out where your "personal" Stata directory is by
 typing in Stata command `personal`. This directory may actually not exist yet --
 you may have to create it first (you can do it from Stata:
