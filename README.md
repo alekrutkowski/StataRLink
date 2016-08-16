@@ -124,7 +124,7 @@ R "server" started successfully
 -------------------------------- R output end ----------------------------------
 ```
 
-*`// The "r" command allows to execute R functions interactively:`*
+*`// The "r" command executes R functions interactively:`*
 
 **`r StataData <- within(StataData, new <- price/100)`**
 

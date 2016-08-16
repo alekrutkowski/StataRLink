@@ -9,7 +9,7 @@ prog ex2md
 		di
 		loc wrap = `"`0'"' != "stopr" & !strmatch(`"`0'"',"keep m*")
 		if `wrap' & !`comment' di char(96) + char(96) + char(96)
-		if !`comment' `=subinstr(`"`0'"',"||","//",1)'
+		if !`comment' `0'
 		if `wrap' & !`comment' di char(96) + char(96) + char(96)
 		if `wrap' & !`comment' di
 	}
@@ -27,7 +27,7 @@ noi ex2md keep make price mpg rep78
 noi ex2md comment `"Command "tor" = "to R" -- export data to R;"'
 noi ex2md comment `"as a convention the dataset is put into R object called "StataData":"'
 noi ex2md tor
-noi ex2md comment `"The "r" command allows to execute R functions interactively:"'
+noi ex2md comment `"The "r" command executes R functions interactively:"'
 noi ex2md r StataData <- within(StataData, new <- price/100)
 noi ex2md comment `"Import modified data ("StataData" object) back into Stata:"'
 noi ex2md fromr, clear
