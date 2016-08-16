@@ -21,16 +21,26 @@ prog r, rclass
 		di
 		tempname fh
 		local linenum = 0
+		local rlinenum = 0
 		file open `fh' using "`server_dir'script `dt'.R.output", read text
 		file read `fh' line
 		while r(eof)==0 {
 			local linenum = `linenum' + 1
-			ret loc r`=`linenum'-1' `"`macval(line)'"'
+			if !mi(`"`macval(line)'"') {
+				local rlinenum = `rlinenum' + 1
+				ret loc r`rlinenum' `"`macval(line)'"'
+			}
 			file read `fh' line
 		}
 		file close `fh'
-		ret sca rn = `linenum' - 1
+		ret sca rn = `rlinenum'
 		qui rm "`server_dir'script `dt'.R.output"
+		cap conf file "`server_dir'script `dt'.R.error"
+		if !_rc {
+			qui rm "`server_dir'script `dt'.R.error"
+			di as err "R error; see the message above."
+			err 675
+		}
 	}
 end
 

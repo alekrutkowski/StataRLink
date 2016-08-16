@@ -28,8 +28,25 @@ loc gh "https://raw.githubusercontent.com/alekrutkowski/StataRLink/master/"
 loc F1 r.ado startr.ado stopr.ado tor.ado fromr.ado
 loc F2 StataRLink_server.R dicen.ado filewrap.ado waitforfile.ado
 foreach f in `F1' `F2' {
+   di "Dealing with file `f'"
    copy "`gh'`f'" "`c(sysdir_personal)'`f'", text public
 }
+```
+
+If you **re-install** *StataRLink*, add the word `replace` at the end of the
+penultimate line (the one inside the `foreach` loop,
+which starts with `copy`), that should look like this:
+
+```
+   copy "`gh'`f'" "`c(sysdir_personal)'`f'", text public replace
+```
+
+If you **un-install** *StataRLink*, replace the
+penultimate line (the one inside the `foreach` loop,
+which starts with `copy`) with the following code:
+
+```
+   rm "`c(sysdir_personal)'`f'"
 ```
 
 #### Manually
@@ -67,112 +84,176 @@ E.g., on Linux (Ubuntu) it may be:
 global rscript_path "/usr/lib/R/bin/Rscript"
 ```
 
-### Usage examples
+### Simple usage examples
+
+*`// Start R "server":`*
+
+**`startr`**
 
 ```
-. startr  // start R "server"
 R "server" started successfully
+```
 
-. sysuse auto, clear  // open example datasets available in Stata (built-in)
+*`// Open an example dataset available in Stata (built-in):`*
+
+**`sysuse auto, clear`**
+
+```
 (1978 Automobile Data)
+```
 
-. tor  // i.e. "to R" -- export data to R; as a convention the dataset is put into R object called `StataData`
-------------------------------------------------------------- R output start ---------------------------------------------------------------
+*`// Keep only some columns (variables) for clarity:`*
+
+**`keep make price mpg rep78`**
+
+*`// Command "tor" = "to R" -- export data to R;`*
+
+*`// as a convention the dataset is put into R object called "StataData":`*
+
+**`tor`**
+
+```
+------------------------------- R output start ---------------------------------
 > str(StataData)
-'data.frame':   74 obs. of  12 variables:
- $ make        : Factor w/ 74 levels "AMC Concord",..: 1 2 3 7 8 9 10 11 12 13 ...
- $ price       : int  4099 4749 3799 4816 7827 5788 4453 5189 10372 4082 ...
- $ mpg         : int  22 17 22 20 15 18 26 20 16 19 ...
- $ rep78       : int  3 3 NA 3 4 3 NA 3 3 3 ...
- $ headroom    : num  2.5 3 3 4.5 4 4 3 2 3.5 3.5 ...
- $ trunk       : int  11 11 12 16 20 21 10 16 17 13 ...
- $ weight      : int  2930 3350 2640 3250 4080 3670 2230 3280 3880 3400 ...
- $ length      : int  186 173 168 196 222 218 170 200 207 200 ...
- $ turn        : int  40 40 35 40 43 43 34 42 43 42 ...
- $ displacement: int  121 258 121 196 350 231 304 196 231 231 ...
- $ gear_ratio  : num  3.58 2.53 3.08 2.93 2.41 2.73 2.87 2.93 2.93 3.08 ...
- $ foreign     : Factor w/ 2 levels "Domestic","Foreign": 1 1 1 1 1 1 1 1 1 1 ...
--------------------------------------------------------------- R output end ----------------------------------------------------------------
+'data.frame':   74 obs. of  4 variables:
+ $ make : Factor w/ 74 levels "AMC Concord",..: 1 2 3 7 8 9 10 11 12 13 ...
+ $ price: int  4099 4749 3799 4816 7827 5788 4453 5189 10372 4082 ...
+ $ mpg  : int  22 17 22 20 15 18 26 20 16 19 ...
+ $ rep78: int  3 3 NA 3 4 3 NA 3 3 3 ...
+-------------------------------- R output end ----------------------------------
+```
 
-. r StataData <- within(StataData, new <- price/100)  // `r` command allows to execute R functions interactively
-------------------------------------------------------------- R output start ---------------------------------------------------------------
+*`// The "r" command allows to execute R functions interactively:`*
+
+**`r StataData <- within(StataData, new <- price/100)`**
+
+```
+------------------------------- R output start ---------------------------------
 > StataData <- within(StataData, new <- price/100)
--------------------------------------------------------------- R output end ----------------------------------------------------------------
+-------------------------------- R output end ----------------------------------
+```
 
-. fromr  // import modified data (`StataData` object) back into Stata
-(13 vars, 74 obs)
+*`// Import modified data ("StataData" object) back into Stata:`*
 
-. list in 1/5, clean  // have a look at the top of the data
+**`fromr, clear`**
 
-                make   price   mpg   rep78   headroom   trunk   weight   length   turn   displa~t   gear_r~o    foreign     new  
-  1.     AMC Concord    4099    22       3        2.5      11     2930      186     40        121       3.58   Domestic   40.99  
-  2.       AMC Pacer    4749    17       3          3      11     3350      173     40        258       2.53   Domestic   47.49  
-  3.      AMC Spirit    3799    22       .          3      12     2640      168     35        121       3.08   Domestic   37.99  
-  4.   Buick Century    4816    20       3        4.5      16     3250      196     40        196       2.93   Domestic   48.16  
-  5.   Buick Electra    7827    15       4          4      20     4080      222     43        350       2.41   Domestic   78.27  
+```
+(5 vars, 74 obs)
+```
 
-. r StataData <- within(StataData, new2 <- rep78/100)  // do some manipulations again in R
-------------------------------------------------------------- R output start ---------------------------------------------------------------
+*`// Have a look at the top of the data:`*
+
+**`list in 1/5, clean`**
+
+```
+
+                make   price   mpg   rep78     new  
+  1.     AMC Concord    4099    22       3   40.99  
+  2.       AMC Pacer    4749    17       3   47.49  
+  3.      AMC Spirit    3799    22       .   37.99  
+  4.   Buick Century    4816    20       3   48.16  
+  5.   Buick Electra    7827    15       4   78.27  
+```
+
+*`// Do some manipulations again in R:`*
+
+**`r StataData <- within(StataData, new2 <- rep78/100)`**
+
+```
+------------------------------- R output start ---------------------------------
 > StataData <- within(StataData, new2 <- rep78/100)
--------------------------------------------------------------- R output end ----------------------------------------------------------------
+-------------------------------- R output end ----------------------------------
+```
 
-. fromr, clear  // import the latest version of the `StataData` object
-(14 vars, 74 obs)
+*`// Import the latest version of the "StataData" object:`*
 
-. list in 1/5, clean  // have a look at the top of the data
+**`fromr, clear`**
 
-                make   price   mpg   rep78   headroom   trunk   weight   length   turn   displa~t   gear_r~o    foreign     new   new2  
-  1.     AMC Concord    4099    22       3        2.5      11     2930      186     40        121       3.58   Domestic   40.99    .03  
-  2.       AMC Pacer    4749    17       3          3      11     3350      173     40        258       2.53   Domestic   47.49    .03  
-  3.      AMC Spirit    3799    22       .          3      12     2640      168     35        121       3.08   Domestic   37.99      .  
-  4.   Buick Century    4816    20       3        4.5      16     3250      196     40        196       2.93   Domestic   48.16    .03  
-  5.   Buick Electra    7827    15       4          4      20     4080      222     43        350       2.41   Domestic   78.27    .04  
+```
+(6 vars, 74 obs)
+```
 
-. tor in 1/3  // you can export observation subsets with `if` and `in`
-------------------------------------------------------------- R output start ---------------------------------------------------------------
+*`// Have a look at the top of the data:`*
+
+**`list in 1/5, clean`**
+
+```
+
+                make   price   mpg   rep78     new   new2  
+  1.     AMC Concord    4099    22       3   40.99    .03  
+  2.       AMC Pacer    4749    17       3   47.49    .03  
+  3.      AMC Spirit    3799    22       .   37.99      .  
+  4.   Buick Century    4816    20       3   48.16    .03  
+  5.   Buick Electra    7827    15       4   78.27    .04  
+```
+
+*`// You can export observation subsets with "if" and "in":`*
+
+**`tor in 1/3`**
+
+```
+------------------------------- R output start ---------------------------------
 > str(StataData)
-'data.frame':   3 obs. of  14 variables:
- $ make        : Factor w/ 3 levels "AMC Concord",..: 1 2 3
- $ price       : int  4099 4749 3799
- $ mpg         : int  22 17 22
- $ rep78       : int  3 3 NA
- $ headroom    : num  2.5 3 3
- $ trunk       : int  11 11 12
- $ weight      : int  2930 3350 2640
- $ length      : int  186 173 168
- $ turn        : int  40 40 35
- $ displacement: int  121 258 121
- $ gear_ratio  : num  3.58 2.53 3.08
- $ foreign     : Factor w/ 1 level "Domestic": 1 1 1
- $ new         : num  41 47.5 38
- $ new2        : num  0.03 0.03 NA
--------------------------------------------------------------- R output end ----------------------------------------------------------------
+'data.frame':   3 obs. of  6 variables:
+ $ make : Factor w/ 3 levels "AMC Concord",..: 1 2 3
+ $ price: int  4099 4749 3799
+ $ mpg  : int  22 17 22
+ $ rep78: int  3 3 NA
+ $ new  : num  41 47.5 38
+ $ new2 : num  0.03 0.03 NA
+-------------------------------- R output end ----------------------------------
+```
 
-. r StataData  // see how the data now looks inside R
-------------------------------------------------------------- R output start ---------------------------------------------------------------
+*`// See how the data now looks inside R:`*
+
+**`r StataData`**
+
+```
+------------------------------- R output start ---------------------------------
 > StataData
-         make price mpg rep78 headroom trunk weight length turn displacement gear_ratio  foreign   new new2
-1 AMC Concord  4099  22     3      2.5    11   2930    186   40          121       3.58 Domestic 40.99 0.03
-2   AMC Pacer  4749  17     3      3.0    11   3350    173   40          258       2.53 Domestic 47.49 0.03
-3  AMC Spirit  3799  22    NA      3.0    12   2640    168   35          121       3.08 Domestic 37.99   NA
--------------------------------------------------------------- R output end ----------------------------------------------------------------
+         make price mpg rep78   new new2
+1 AMC Concord  4099  22     3 40.99 0.03
+2   AMC Pacer  4749  17     3 47.49 0.03
+3  AMC Spirit  3799  22    NA 37.99   NA
+-------------------------------- R output end ----------------------------------
+```
 
-. tor m* in 1/3  // you can also export column (variable) subsets
-------------------------------------------------------------- R output start ---------------------------------------------------------------
+*`// You can also export column (variable) subsets:`*
+
+**`tor m* in 1/3`**
+
+```
+------------------------------- R output start ---------------------------------
 > str(StataData)
 'data.frame':   3 obs. of  2 variables:
  $ make: Factor w/ 3 levels "AMC Concord",..: 1 2 3
  $ mpg : int  22 17 22
--------------------------------------------------------------- R output end ----------------------------------------------------------------
+-------------------------------- R output end ----------------------------------
+```
 
-. r StataData  // again, see how the data now looks inside R
-------------------------------------------------------------- R output start ---------------------------------------------------------------
+*`// Again, see how the data now looks inside R:`*
+
+**`r StataData`**
+
+```
+------------------------------- R output start ---------------------------------
 > StataData
          make mpg
 1 AMC Concord  22
 2   AMC Pacer  17
 3  AMC Spirit  22
--------------------------------------------------------------- R output end ----------------------------------------------------------------
-
-. stopr  // close the R "server"
+-------------------------------- R output end ----------------------------------
 ```
+
+*`// Close the R "server":`*
+
+**`stopr`**
+
+### Details
+
+The Stata command `r` returns the displayed R output in r-class Stata macros
+plus a scalar indicating the number of lines returned. Type `return list`
+after `r ...` to see it.
+
+In addition, if the line of R code is executed with an error, `r` returns Stata error
+number 675.
