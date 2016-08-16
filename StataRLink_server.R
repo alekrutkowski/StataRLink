@@ -1,5 +1,3 @@
-StataEnv <- new.env()
-
 (function(server_dir, dt_stamp) {
     # Helpers
     f <- list
@@ -20,11 +18,10 @@ StataEnv <- new.env()
     execRcmd <- function(newfile, StataEnv)
         capture.output(tryCatch(source(newfile,
                                        echo=TRUE,
-                                       local=StataEnv),
+                                       local=globalenv()),
                                 error = errHandl(err, newfile)),
                        file = newfile %+% '.output')
     # Core:
-    cat('\014') # clear Rscript window
     message('StataRLink Rscript "server" started\n',
             'The Stata-R communication directory:\n',
             server_dir)
