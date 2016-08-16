@@ -1,7 +1,8 @@
 StataRLink: Stata commands (.ado files) for easy interactive work with R
 ================
 Aleksander Rutkowski
-2016-08-11
+
+2016-08-16
 
 The available Stata commands -- very simple API:
 
