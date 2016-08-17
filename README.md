@@ -109,11 +109,13 @@ R "server" started successfully
 
 *`// Command "tor" = "to R" -- export data to R;`*
 
-*`// as a convention the dataset is put into R object called "StataData":`*
+*`// by default, the dataset is put into R object called "StataData":`*
 
 **`tor`**
 
 ```
+Exporting data from Stata...
+Importng data into R object 'StataData'...
 ------------------------------- R output start ---------------------------------
 > str(StataData)
 'data.frame':   74 obs. of  4 variables:
@@ -139,6 +141,8 @@ R "server" started successfully
 **`fromr, clear`**
 
 ```
+Exportng 'StataData' from R...
+Importing data into Stata...
 (5 vars, 74 obs)
 ```
 
@@ -147,7 +151,6 @@ R "server" started successfully
 **`list in 1/5, clean`**
 
 ```
-
                 make   price   mpg   rep78     new  
   1.     AMC Concord    4099    22       3   40.99  
   2.       AMC Pacer    4749    17       3   47.49  
@@ -171,6 +174,8 @@ R "server" started successfully
 **`fromr, clear`**
 
 ```
+Exportng 'StataData' from R...
+Importing data into Stata...
 (6 vars, 74 obs)
 ```
 
@@ -179,7 +184,6 @@ R "server" started successfully
 **`list in 1/5, clean`**
 
 ```
-
                 make   price   mpg   rep78     new   new2  
   1.     AMC Concord    4099    22       3   40.99    .03  
   2.       AMC Pacer    4749    17       3   47.49    .03  
@@ -188,11 +192,15 @@ R "server" started successfully
   5.   Buick Electra    7827    15       4   78.27    .04  
 ```
 
-*`// You can export observation subsets with "if" and "in":`*
+*`// You can export observation subsets with "if" and "in"`*
 
-**`tor in 1/3`**
+*`// (put option "replace" to replace the current "StataData")`*
+
+**`tor in 1/3, replace`**
 
 ```
+Exporting data from Stata...
+Importng data into R object 'StataData'...
 ------------------------------- R output start ---------------------------------
 > str(StataData)
 'data.frame':   3 obs. of  6 variables:
@@ -221,9 +229,11 @@ R "server" started successfully
 
 *`// You can also export column (variable) subsets:`*
 
-**`tor m* in 1/3`**
+**`tor m* in 1/3, replace`**
 
 ```
+Exporting data from Stata...
+Importng data into R object 'StataData'...
 ------------------------------- R output start ---------------------------------
 > str(StataData)
 'data.frame':   3 obs. of  2 variables:
@@ -244,6 +254,52 @@ R "server" started successfully
 2   AMC Pacer  17
 3  AMC Spirit  22
 -------------------------------- R output end ----------------------------------
+```
+
+*`// You can also export to and import from a different object than`*
+
+*`// the default "StataData"`*
+
+**`tor m* in 1/3, name(myOtherName)`**
+
+```
+Exporting data from Stata...
+Importng data into R object 'myOtherName'...
+------------------------------- R output start ---------------------------------
+> str(myOtherName)
+'data.frame':   3 obs. of  2 variables:
+ $ make: Factor w/ 3 levels "AMC Concord",..: 1 2 3
+ $ mpg : int  22 17 22
+-------------------------------- R output end ----------------------------------
+```
+
+*`// Escape the dollar character with a backslash to avoid`*
+
+*`// interpreting it in Stata as a global macro`*
+
+**`r myOtherName\$new_column <- 11:13`**
+
+```
+------------------------------- R output start ---------------------------------
+> myOtherName$new_column <- 11:13
+-------------------------------- R output end ----------------------------------
+```
+
+**`fromr, name(myOtherName) clear`**
+
+```
+Exportng 'myOtherName' from R...
+Importing data into Stata...
+(3 vars, 3 obs)
+```
+
+**`list, clean abbreviate(11)`**
+
+```
+              make   mpg   new_column  
+  1.   AMC Concord    22           11  
+  2.     AMC Pacer    17           12  
+  3.    AMC Spirit    22           13  
 ```
 
 *`// Close the R "server":`*
