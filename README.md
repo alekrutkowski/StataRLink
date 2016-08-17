@@ -2,7 +2,7 @@ StataRLink: Stata commands (.ado files) for easy interactive work with R
 ================
 Aleksander Rutkowski
 
-2016-08-16
+2016-08-17
 
 The available Stata commands -- very simple API:
 
@@ -26,7 +26,7 @@ Stata code:
 ```
 cap mkdir "`c(sysdir_personal)'", public
 loc gh "https://raw.githubusercontent.com/alekrutkowski/StataRLink/master/"
-loc F1 r.ado startr.ado stopr.ado tor.ado fromr.ado
+loc F1 r.ado startr.ado stopr.ado tor.ado fromr.ado check_data_consistency.ado
 loc F2 StataRLink_server.R dicen.ado filewrap.ado waitforfile.ado
 foreach f in `F1' `F2' {
    di "Dealing with file `f'"

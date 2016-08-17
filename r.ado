@@ -23,19 +23,23 @@ prog r, rclass
 		tempname fh
 		local linenum = 0
 		local rlinenum = 0
-		file open `fh' using "`server_dir'script `dt'.R.output", read text
-		file read `fh' line
-		while r(eof)==0 {
-			local linenum = `linenum' + 1
-			if !mi(`"`macval(line)'"') {
-				local rlinenum = `rlinenum' + 1
-				ret loc r`rlinenum' `"`macval(line)'"'
-			}
+		cap {
+			file open `fh' using "`server_dir'script `dt'.R.output", read text
 			file read `fh' line
+			while r(eof)==0 {
+				local linenum = `linenum' + 1
+				if !mi(`"`macval(line)'"') {
+					local rlinenum = `rlinenum' + 1
+					ret loc r`rlinenum' `"`macval(line)'"'
+				}
+				file read `fh' line
+			}
+			file close `fh'
+			ret sca rn = `rlinenum'
 		}
-		file close `fh'
-		ret sca rn = `rlinenum'
-		qui rm "`server_dir'script `dt'.R.output"
+		if _rc di as err /*
+			*/ "Warning: there was a problem when assigning return macros!"
+		cap rm "`server_dir'script `dt'.R.output"
 		cap conf file "`server_dir'script `dt'.R.error"
 		if !_rc {
 			qui rm "`server_dir'script `dt'.R.error"
