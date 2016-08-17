@@ -1,5 +1,11 @@
 prog tor
 	syntax [varlist] [if] [in] [, name(string asis) replace]
+	qui des
+	if r(N)==0 | r(k)==0 {
+		di as err "The dataset in Stata memory is empty!" _n /*
+			*/ "(`r(k)' variables/columns, `r(N)' observations/rows)"
+		err 3
+	}
 	if mi(`"`name'"') loc name "StataData"
 	if mi("`replace'") {
 		qui r exists('`name'')
@@ -16,7 +22,10 @@ prog tor
 	qui outsheet `varlist' using "`d'" `if' `in', replace
 	loc d = subinstr("`d'","\","/",.)
 	di as txt "Importng data into R object " as res `"'`name''"' as txt "..."
-	qui r \``name'\` <- read.delim('`d''); file.remove('`d'')
+	cap r \``name'\` <- read.delim('`d''); file.remove('`d'')
+	if _rc {
+		r \``name'\` <- read.delim('`d''); file.remove('`d'') // "debugging mode"
+	}
 	r str(\``name'\`)
 end
 
