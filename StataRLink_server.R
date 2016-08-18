@@ -29,8 +29,9 @@
     qui(list.files(full.names=TRUE,
                    path=server_dir,
                    pattern='^script .*\\.R$' %+%
-                       '|^script .*\\.R.done$' %+%
-                       '|^script .*\\.R.output$' %+%
+                       '|^script .*\\.R\\.job$' %+%
+                       '|^script .*\\.R\\.done$' %+%
+                       '|^script .*\\.R\\.output$' %+%
                        '|.*.server_opened$' %+%
                        '|^server.*\\.R$') %>>>%
             f(setdiff, server_dir %+% 'server ' %+% dt_stamp %+% '.R') %>>>%
@@ -40,15 +41,17 @@
     repeat {
         newfile <-
             list.files(path=server_dir,
-                       pattern='^script .*\\.R$',
+                       pattern='^script .*\\.R\\.job$',
                        full.names=TRUE)[1]
         if (!is.na(newfile)) {
+            newfile <- sub('.job',"",newfile,fixed=TRUE)
             message(Sys.time(), ' Executing:\n', readLines(newfile))
             Err <- FALSE
             execRcmd(newfile, StataEnv)
             if (Err) message('Error!')
             sendMess(newfile, 'done')
             file.remove(newfile)
+            file.remove(newfile %+% '.job')
             message('Waiting for jobs...')
             Sys.sleep(.01)
         }

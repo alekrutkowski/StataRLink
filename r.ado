@@ -12,14 +12,19 @@ prog r, rclass
 	file open `rs' using "`server_dir'script `dt'.R", write text
 		file write `rs' `"`macval(0)'"' _n
 	file close `rs'
+	tempname rsj
+	file open `rsj' using "`server_dir'script `dt'.R.job", write text
+		file write `rsj' "" _n
+	file close `rsj'
 	if strtrim(`"`macval(0)'"')!="q()" {
 		waitforfile "`server_dir'script `dt'.R.done"
-		sleep 10 // to avoid empty output file due to disk I/O delays
 		qui rm "`server_dir'script `dt'.R.done"
-		dicen "R output start"
-		type "`server_dir'script `dt'.R.output"
-		dicen "R output end"
-		di
+		if c(noisily) {
+			dicen "R output start"
+			type "`server_dir'script `dt'.R.output"
+			dicen "R output end"
+			di
+		}
 		tempname fh
 		local linenum = 0
 		local rlinenum = 0
