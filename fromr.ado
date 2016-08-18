@@ -26,7 +26,7 @@ prog fromr
 	}
 	tempfile d
 	loc d = subinstr("`d'","\","/",.)
-	di as txt "Exportng " as res `"'`name''"' as txt " from R..."
+	di as txt "Exporting " as res `"'`name''"' as txt " from R..."
 	cap r write.table(\``name'\`,'`d'', sep='\t', row.names=FALSE, na="", quote=FALSE)
 	if _rc  {
 		// "debugging mode":

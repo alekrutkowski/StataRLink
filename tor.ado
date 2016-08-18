@@ -21,7 +21,7 @@ prog tor
 	di as txt "Exporting data from Stata..."
 	qui outsheet `varlist' using "`d'" `if' `in', replace noquote
 	loc d = subinstr("`d'","\","/",.)
-	di as txt "Importng data into R object " as res `"'`name''"' as txt "..."
+	di as txt "Importing data into R object " as res `"'`name''"' as txt "..."
 	cap r \``name'\` <- read.delim('`d'', na.strings="", quote=""); file.remove('`d'')
 	if _rc {
 		// "debugging mode":
