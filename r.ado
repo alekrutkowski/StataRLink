@@ -16,9 +16,9 @@ prog r, rclass
 	file open `rsj' using "`server_dir'script `dt'.R.job", write text
 		file write `rsj' "" _n
 	file close `rsj'
+	waitforfile "`server_dir'script `dt'.R.done"
+	qui rm "`server_dir'script `dt'.R.done"
 	if strtrim(`"`macval(0)'"')!="q()" {
-		waitforfile "`server_dir'script `dt'.R.done"
-		qui rm "`server_dir'script `dt'.R.done"
 		if c(noisily) {
 			dicen "R output start"
 			type "`server_dir'script `dt'.R.output"

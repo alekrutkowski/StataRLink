@@ -22,6 +22,7 @@ prog startr
 	waitforfile "`server_dir'`dt'.server_opened"
 	rm "`server_dir'`dt'.server_opened"
 	glo rserver "on"
+	glo rserver_script "`server_file_copy'"
 	noi di as txt `"R "server" started successfully"'
 end
 

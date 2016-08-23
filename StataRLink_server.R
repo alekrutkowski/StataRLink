@@ -7,7 +7,7 @@
     sendMess <- function(path,txt) cat("", file = path %+% '.' %+% txt)
     errHandl <- function(err, newfile) {
         function(err) {
-            Err <<- TRUE
+            message('Error!')
             sendMess(newfile, 'error')
             sub(pattern=newfile, replacement="",
                 'Error:\n ' %+% geterrmessage(),
@@ -15,12 +15,20 @@
                 f(cat, sep='\n')
         }
     }
-    execRcmd <- function(newfile, StataEnv)
-        capture.output(tryCatch(source(newfile,
-                                       echo=TRUE,
-                                       local=globalenv()),
-                                error = errHandl(err, newfile)),
-                       file = newfile %+% '.output')
+    execRcmd <- function(newfile)
+        `if`(grepl('.*q\\(\\).*',
+                   readLines(newfile)),
+             {conclude(newfile); q()},
+             capture.output(tryCatch(source(newfile,
+                                            echo=TRUE,
+                                            local=globalenv()),
+                                     error = errHandl(err, newfile)),
+                            file = newfile %+% '.output'))
+    conclude <- function(newfile) {
+        sendMess(newfile, 'done')
+        file.remove(newfile)
+        file.remove(newfile %+% '.job')
+    }
     # Core:
     message('StataRLink Rscript "server" started\n',
             'The Stata-R communication directory:\n',
@@ -46,14 +54,11 @@
         if (!is.na(newfile)) {
             newfile <- sub('.job',"",newfile,fixed=TRUE)
             message(Sys.time(), ' Executing:\n', readLines(newfile))
-            Err <- FALSE
-            execRcmd(newfile, StataEnv)
-            if (Err) message('Error!')
-            sendMess(newfile, 'done')
-            file.remove(newfile)
-            file.remove(newfile %+% '.job')
+            execRcmd(newfile)
+            conclude(newfile)
             message('Waiting for jobs...')
             Sys.sleep(.01)
         }
     }
-}
+}  # unbalanced parentheses on purpose: Stata will dynamically modify this
+   # file, putting a closing parenthese and argument values (server_dir, dt_stamp)
