@@ -9,7 +9,7 @@ The available Stata commands -- very simple API:
 - `r` -- allows for the execution of a line of arbitrary R expressions
 - `startr` -- starts a local R "server"
 - `stopr` -- stops a local R "server"
-- `tor` -- exports the current dataset (sitting in Stata memory) into R (`tor` = to R) to a data.fame named *StataData*
+- `tor` -- exports the current dataset (sitting in Stata memory) into R (`tor` = to R) to a data.frame named *StataData*
 - `fromr` -- import the *StataData* data.frame from R into Stata
 
 ### Installation
@@ -63,7 +63,7 @@ you may have to create it first (you can do it from Stata:
 ### Configuration
 
 Important! Before starting the R "server" with command `startr`,
-you have tell Stata where to find it. Put the nested quotes
+you have to tell Stata where to find it. Put the nested quotes
 inside the `rscript_path` global macro if the path contains
 one or more spaces:
 
