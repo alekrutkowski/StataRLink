@@ -1,3 +1,6 @@
+> [!TIP]
+> For a newer and faster solution see: https://github.com/alekrutkowski/stata-rbridge
+
 StataRLink: Stata commands (.ado files) for easy interactive work with R
 ================
 Aleksander Rutkowski
